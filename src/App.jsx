@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { Sun, Moon, Menu, X, Package, BarChart3, Users, ShoppingCart, Settings, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Home from './pages/Home'
+import Suppliers from './pages/Suppliers'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -100,6 +101,7 @@ function App() {
         <main className="flex-1 overflow-auto">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/suppliers" element={<Suppliers />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -110,11 +112,11 @@ function App() {
 
 function SidebarContent() {
   const navItems = [
-    { icon: <Package size={18} />, label: "Inventory", active: true },
-    { icon: <ShoppingCart size={18} />, label: "Sales" },
-    { icon: <Users size={18} />, label: "Suppliers" },
-    { icon: <BarChart3 size={18} />, label: "Reports" },
-    { icon: <Settings size={18} />, label: "Settings" },
+    { icon: <Package size={18} />, label: "Inventory", path: "/" },
+    { icon: <ShoppingCart size={18} />, label: "Sales", path: "/sales" },
+    { icon: <Users size={18} />, label: "Suppliers", path: "/suppliers", active: window.location.pathname === "/suppliers" },
+    { icon: <BarChart3 size={18} />, label: "Reports", path: "/reports" },
+    { icon: <Settings size={18} />, label: "Settings", path: "/settings" },
   ]
   
   return (
@@ -123,7 +125,7 @@ function SidebarContent() {
         {navItems.map((item, index) => (
           <a 
             key={index}
-            href="#"
+            href={item.path}
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               item.active 
                 ? "bg-primary/10 text-primary dark:bg-primary/20" 
