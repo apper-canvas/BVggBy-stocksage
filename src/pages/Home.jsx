@@ -1,11 +1,17 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Plus, Filter, ArrowUpDown, AlertTriangle, TrendingUp, TrendingDown, Package, DollarSign, Truck } from 'lucide-react'
+import { Search, Plus, Filter, ArrowUpDown, AlertTriangle, TrendingUp, TrendingDown, Package, DollarSign, Truck, ChevronDown, Calendar, Clock, CheckSquare, XSquare } from 'lucide-react'
 import MainFeature from '../components/MainFeature'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false)
+  const [filterPresets, setFilterPresets] = useState({
+    dateRange: 'all',
+    category: 'all',
+    stockStatus: 'all'
+  })
   
   const tabs = [
     { id: 'all', label: 'All Items' },
@@ -48,6 +54,9 @@ export default function Home() {
       icon: <Truck className="text-accent" />
     }
   ]
+
+  // Reference to MainFeature component
+  const mainFeatureRef = useState(null)[0]
   
   return (
     <div className="container mx-auto px-4 py-6">
@@ -58,11 +67,102 @@ export default function Home() {
         </div>
         
         <div className="flex gap-3">
-          <button className="btn btn-outline flex items-center gap-2">
-            <Filter size={16} />
-            <span>Filter</span>
-          </button>
-          <button className="btn btn-primary flex items-center gap-2">
+          <div className="relative">
+            <button 
+              className="btn btn-outline flex items-center gap-2"
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            >
+              <Filter size={16} />
+              <span>Filter</span>
+              <ChevronDown size={14} className={`transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {showFilterDropdown && (
+              <div className="absolute right-0 top-12 w-64 bg-white dark:bg-surface-800 rounded-lg shadow-lg p-4 z-10 border border-surface-200 dark:border-surface-700">
+                <h3 className="font-medium mb-3">Filter Products</h3>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Date Range</label>
+                    <select 
+                      className="input text-sm"
+                      value={filterPresets.dateRange}
+                      onChange={(e) => setFilterPresets({...filterPresets, dateRange: e.target.value})}
+                    >
+                      <option value="all">All Time</option>
+                      <option value="today">Today</option>
+                      <option value="week">This Week</option>
+                      <option value="month">This Month</option>
+                      <option value="quarter">This Quarter</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Category</label>
+                    <select 
+                      className="input text-sm"
+                      value={filterPresets.category}
+                      onChange={(e) => setFilterPresets({...filterPresets, category: e.target.value})}
+                    >
+                      <option value="all">All Categories</option>
+                      <option value="electronics">Electronics</option>
+                      <option value="apparel">Apparel</option>
+                      <option value="home">Home Goods</option>
+                      <option value="beauty">Beauty</option>
+                      <option value="furniture">Furniture</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Stock Status</label>
+                    <select 
+                      className="input text-sm"
+                      value={filterPresets.stockStatus}
+                      onChange={(e) => setFilterPresets({...filterPresets, stockStatus: e.target.value})}
+                    >
+                      <option value="all">All Stock Levels</option>
+                      <option value="in-stock">In Stock</option>
+                      <option value="low-stock">Low Stock</option>
+                      <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between mt-4 pt-3 border-t border-surface-200 dark:border-surface-700">
+                  <button 
+                    className="btn btn-sm btn-outline flex items-center gap-1"
+                    onClick={() => {
+                      setFilterPresets({
+                        dateRange: 'all',
+                        category: 'all',
+                        stockStatus: 'all'
+                      })
+                    }}
+                  >
+                    <XSquare size={14} />
+                    <span>Clear</span>
+                  </button>
+                  <button 
+                    className="btn btn-sm btn-primary flex items-center gap-1"
+                    onClick={() => setShowFilterDropdown(false)}
+                  >
+                    <CheckSquare size={14} />
+                    <span>Apply</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <button 
+            className="btn btn-primary flex items-center gap-2"
+            onClick={() => {
+              // Assuming MainFeature has a method called openModal to open the add product form
+              if (mainFeatureRef && mainFeatureRef.openModal) {
+                mainFeatureRef.openModal()
+              }
+            }}
+          >
             <Plus size={16} />
             <span>Add Product</span>
           </button>
@@ -132,7 +232,7 @@ export default function Home() {
       </div>
       
       {/* Main Feature */}
-      <MainFeature activeTab={activeTab} searchQuery={searchQuery} />
+      <MainFeature activeTab={activeTab} searchQuery={searchQuery} ref={mainFeatureRef} />
     </div>
   )
 }
